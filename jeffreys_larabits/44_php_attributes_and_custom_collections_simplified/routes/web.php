@@ -1,7 +1,10 @@
 <?php
 
+use App\Models\Video;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $videos = Video::all()->groupByRelativeDate();
+
+    dd($videos);
 });

@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Attributes\CollectedBy;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[CollectedBy(VideoCollection::class)]
 class Video extends Model
 {
     /** @use HasFactory<\Database\Factories\VideoFactory> */
@@ -22,6 +25,16 @@ class Video extends Model
 
     public function newCollection(array $models = [])
     {
-        return new VideoCollection($models);
+        // return new VideoCollection($models);
+        $reflector = new \ReflectionClass($this);
+        $attributes = ($reflector->getAttributes(CollectedBy::class));
+
+        if (count($attributes) && count($attributes[0]->getArguments())) {
+            $collection = $attributes[0]->getArguments()[0];
+
+            return new $collection($models);
+        }
+
+        return new Collection($models);
     }
 }
